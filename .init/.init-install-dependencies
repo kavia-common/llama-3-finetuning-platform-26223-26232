@@ -1,0 +1,4 @@
+{
+    "command": "./gradlew dependencies",
+    "working_directory": "/home/kavia/workspace/code-generation/llama-3-finetuning-platform-26223-26232/finetune_llama3_backend"
+}
