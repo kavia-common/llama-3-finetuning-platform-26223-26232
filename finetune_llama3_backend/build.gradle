@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.8'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'checkstyle'
 }
 
 group = 'com.example'
@@ -17,6 +18,23 @@ repositories {
 	mavenCentral()
 }
 
+checkstyle {
+	toolVersion = '10.17.0'
+	// Do not fail the build on style violations in CI by default
+	config = resources.text.fromFile('config/checkstyle/checkstyle.xml')
+	ignoreFailures = true
+	showViolations = true
+}
+
+tasks.withType(Checkstyle).configureEach {
+	// Ensure the configuration file is set even if missing at configuration time
+	configFile = file('config/checkstyle/checkstyle.xml')
+	reports {
+		xml.required.set(false)
+		html.required.set(true)
+	}
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -30,4 +48,9 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// Ensure check runs checkstyle tasks so they exist and can be invoked standalone
+tasks.named('check') {
+	dependsOn 'checkstyleMain', 'checkstyleTest'
 }
